@@ -1,0 +1,202 @@
+# ============================================================================
+# Docker Compose - Development and Production Stack
+# ============================================================================
+
+version: '3.8'
+
+services:
+  # ==========================================================================
+  # Frontend
+  # ==========================================================================
+  frontend:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile.frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - gateway
+    networks:
+      - prompt-optimizer
+    environment:
+      - VITE_API_URL=/api/v1
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  # ==========================================================================
+  # API Gateway
+  # ==========================================================================
+  gateway:
+    build:
+      context: ../../backend/gateway
+      dockerfile: ../../infrastructure/docker/Dockerfile.backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - nlp-service
+      - data-service
+      - auth-service
+      - integration-service
+    networks:
+      - prompt-optimizer
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+      - NLP_SERVICE_URL=http://nlp-service:3001
+      - DATA_SERVICE_URL=http://data-service:3002
+      - AUTH_SERVICE_URL=http://auth-service:3003
+      - INTEGRATION_SERVICE_URL=http://integration-service:3004
+      - CORS_ORIGIN=http://localhost:3000
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  # ==========================================================================
+  # NLP Service
+  # ==========================================================================
+  nlp-service:
+    build:
+      context: ../../backend/nlp-service
+      dockerfile: ../../infrastructure/docker/Dockerfile.backend
+    ports:
+      - "3001:3001"
+    networks:
+      - prompt-optimizer
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  # ==========================================================================
+  # Data Service
+  # ==========================================================================
+  data-service:
+    build:
+      context: ../../backend/data-service
+      dockerfile: ../../infrastructure/docker/Dockerfile.backend
+    ports:
+      - "3002:3002"
+    networks:
+      - prompt-optimizer
+    environment:
+      - NODE_ENV=production
+      - PORT=3002
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/prompt_optimizer
+    depends_on:
+      - postgres
+      - redis
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  # ==========================================================================
+  # Auth Service
+  # ==========================================================================
+  auth-service:
+    build:
+      context: ../../backend/auth-service
+      dockerfile: ../../infrastructure/docker/Dockerfile.backend
+    ports:
+      - "3003:3003"
+    networks:
+      - prompt-optimizer
+    environment:
+      - NODE_ENV=production
+      - PORT=3003
+      - JWT_SECRET=${JWT_SECRET:-development-secret-key}
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/prompt_optimizer
+    depends_on:
+      - postgres
+      - redis
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3003/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  # ==========================================================================
+  # Integration Service
+  # ==========================================================================
+  integration-service:
+    build:
+      context: ../../backend/integration-service
+      dockerfile: ../../infrastructure/docker/Dockerfile.backend
+    ports:
+      - "3004:3004"
+    networks:
+      - prompt-optimizer
+    environment:
+      - NODE_ENV=production
+      - PORT=3004
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID:-}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3004/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  # ==========================================================================
+  # PostgreSQL Database
+  # ==========================================================================
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    networks:
+      - prompt-optimizer
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=prompt_optimizer
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================================================
+  # Redis Cache
+  # ==========================================================================
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - prompt-optimizer
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# ==========================================================================
+# Networks
+# ==========================================================================
+networks:
+  prompt-optimizer:
+    driver: bridge
+
+# ==========================================================================
+# Volumes
+# ==========================================================================
+volumes:
+  postgres_data:
+  redis_data:
