@@ -1,0 +1,18 @@
+{
+  "name": "@angla/firebase-config",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Firebase configuration, auth, and Firestore services for Angla",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "lint": "tsc --noEmit",
+    "test": "echo \"No tests yet\""
+  },
+  "dependencies": {
+    "firebase": "^10.8.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.1.3"
+  }
+}

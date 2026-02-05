@@ -1,0 +1,15 @@
+{
+  "name": "@angla/shared",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shared types, utils, and business logic for Angla",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "lint": "tsc --noEmit",
+    "test": "echo \"No tests yet\""
+  },
+  "devDependencies": {
+    "typescript": "^5.1.3"
+  }
+}

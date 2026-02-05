@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Angla — Finance de couple intelligente</title>
+  <meta name="description" content="Angla est le premier copilote financier IA pour couples. Repartition equitable, coach IA, objectifs partages." />
+  <meta name="theme-color" content="#1a365d" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary-dark: #1a365d;
+      --primary: #2d5a87;
+      --primary-light: #4a90e2;
+      --accent: #48bb78;
+      --text: #1a202c;
+      --text-secondary: #4a5568;
+      --bg: #f8fafc;
+      --white: #ffffff;
+      --radius: 16px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--primary-light); text-decoration: none; }
+
+    .hero {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      color: var(--white);
+      padding: 100px 24px 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -50px;
+      left: 0;
+      right: 0;
+      height: 100px;
+      background: var(--bg);
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+    .hero .tagline {
+      font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+      opacity: 0.92;
+      max-width: 600px;
+      margin: 0 auto 40px;
+      line-height: 1.5;
+    }
+    .hero .cta-row { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 14px 32px;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.18); }
+    .btn-primary { background: var(--accent); color: var(--white); }
+    .btn-outline { background: transparent; border: 2px solid var(--white); color: var(--white); }
+
+    .section { max-width: 1100px; margin: 0 auto; padding: 80px 24px; }
+    .section h2 { font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 800; text-align: center; margin-bottom: 12px; }
+    .section .subtitle { text-align: center; color: var(--text-secondary); max-width: 600px; margin: 0 auto 48px; font-size: 1.1rem; }
+
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+    .feature-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      transition: transform 0.2s;
+    }
+    .feature-card:hover { transform: translateY(-4px); }
+    .feature-icon {
+      width: 56px; height: 56px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; margin-bottom: 16px;
+    }
+    .feature-card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
+    .feature-card p { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; }
+
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 32px; counter-reset: step; }
+    .step { text-align: center; }
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      display: flex; align-items: center; justify-content: center;
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--primary); color: var(--white);
+      font-weight: 800; font-size: 1.2rem; margin: 0 auto 16px;
+    }
+    .step h3 { font-weight: 700; margin-bottom: 8px; }
+    .step p { color: var(--text-secondary); font-size: 0.95rem; }
+
+    .calc-demo {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      border-radius: var(--radius); padding: 40px;
+      color: var(--white); max-width: 600px; margin: 0 auto;
+    }
+    .calc-demo h3 { font-size: 1.3rem; margin-bottom: 20px; text-align: center; }
+    .calc-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.15); font-size: 1.05rem; }
+    .calc-row:last-child { border-bottom: none; }
+    .calc-row .label { opacity: 0.85; }
+    .calc-row .value { font-weight: 700; }
+    .calc-highlight { background: rgba(72,187,120,0.2); border-radius: 8px; padding: 12px; margin-top: 16px; text-align: center; font-weight: 600; }
+
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+    .price-card { background: var(--white); border-radius: var(--radius); padding: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04); text-align: center; }
+    .price-card.featured { border: 3px solid var(--primary); position: relative; }
+    .price-card.featured::before { content: 'Populaire'; position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--primary); color: var(--white); padding: 4px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
+    .price-card h3 { font-size: 1.3rem; margin-bottom: 8px; }
+    .price-amount { font-size: 2.5rem; font-weight: 800; color: var(--primary-dark); }
+    .price-amount span { font-size: 1rem; font-weight: 400; color: var(--text-secondary); }
+    .price-features { list-style: none; margin: 24px 0; text-align: left; }
+    .price-features li { padding: 8px 0; padding-left: 24px; position: relative; color: var(--text-secondary); }
+    .price-features li::before { content: '\2713'; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+
+    .cta-banner { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); padding: 64px 24px; text-align: center; color: var(--white); }
+    .cta-banner h2 { font-size: clamp(1.5rem, 4vw, 2.2rem); margin-bottom: 16px; }
+    .cta-banner p { opacity: 0.9; margin-bottom: 32px; font-size: 1.1rem; }
+
+    footer { padding: 40px 24px; text-align: center; color: var(--text-secondary); font-size: 0.9rem; }
+    footer a { color: var(--primary-light); }
+
+    @media (max-width: 600px) {
+      .hero { padding: 70px 16px 60px; }
+      .section { padding: 56px 16px; }
+      .calc-demo { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <h1>Angla</h1>
+    <p class="tagline">Le premier copilote financier IA pour couples. Repartition equitable, coach IA, objectifs partages.</p>
+    <div class="cta-row">
+      <a href="#pricing" class="btn btn-primary">Commencer gratuitement</a>
+      <a href="#features" class="btn btn-outline">Decouvrir</a>
+    </div>
+  </section>
+
+  <section class="section" id="features">
+    <h2>Pourquoi Angla ?</h2>
+    <p class="subtitle">Fini le 50/50. Angla calcule la juste part de chacun en fonction de vos revenus.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#e3f2fd;">&#x2696;</div>
+        <h3>Repartition proportionnelle</h3>
+        <p>Chaque partenaire contribue selon ses revenus. Plus equitable qu'un split 50/50.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#f0fdf4;">&#x1F9E0;</div>
+        <h3>Coach IA</h3>
+        <p>Analyse de vos habitudes, predictions, et suggestions concretes pour economiser ensemble.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#fef3c7;">&#x26A1;</div>
+        <h3>Reglement en 1 tap</h3>
+        <p>Soldez vos comptes instantanement via Apple Pay, Google Pay ou virement bancaire.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#fce7f3;">&#x1F3AF;</div>
+        <h3>Objectifs partages</h3>
+        <p>Maison, vacances, mariage... Epargnez ensemble avec des contributions proportionnelles.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#ede9fe;">&#x1F4CA;</div>
+        <h3>Score d'harmonie</h3>
+        <p>Un score unique de sante financiere de couple. Partagez-le sur les reseaux sociaux.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:#ecfdf5;">&#x1F50D;</div>
+        <h3>Temps reel</h3>
+        <p>Synchronisation instantanee entre partenaires. Notifications push pour chaque depense.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background: var(--white);">
+    <h2>Comment ca marche ?</h2>
+    <p class="subtitle">3 etapes pour gerer vos finances en couple equitablement.</p>
+    <div class="steps">
+      <div class="step">
+        <h3>Creez votre couple</h3>
+        <p>Inscrivez-vous et invitez votre partenaire avec un code unique.</p>
+      </div>
+      <div class="step">
+        <h3>Renseignez vos revenus</h3>
+        <p>Angla calcule automatiquement la part de chacun. Confidentialite garantie.</p>
+      </div>
+      <div class="step">
+        <h3>Ajoutez vos depenses</h3>
+        <p>Angla repartit equitablement et l'IA vous guide pour optimiser votre budget.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Exemple concret</h2>
+    <p class="subtitle">Voici comment Angla calcule une depense de 150 EUR.</p>
+    <div class="calc-demo">
+      <h3>Courses Carrefour — 150 EUR</h3>
+      <div class="calc-row"><span class="label">Simon (revenu: 3 000 EUR)</span><span class="value">70,6%</span></div>
+      <div class="calc-row"><span class="label">Andre (revenu: 1 250 EUR)</span><span class="value">29,4%</span></div>
+      <div class="calc-row"><span class="label">Part de Simon</span><span class="value">105,98 EUR</span></div>
+      <div class="calc-row"><span class="label">Part d'Andre</span><span class="value">44,02 EUR</span></div>
+      <div class="calc-highlight">Andre doit 44,02 EUR a Simon (au lieu de 75 EUR en 50/50)</div>
+    </div>
+  </section>
+
+  <section class="section" style="background: var(--white);" id="pricing">
+    <h2>Tarifs simples</h2>
+    <p class="subtitle">Commencez gratuitement, upgradez quand vous voulez.</p>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <h3>Gratuit</h3>
+        <p class="price-amount">0 EUR<span>/mois</span></p>
+        <ul class="price-features">
+          <li>15 depenses / mois</li>
+          <li>Repartition proportionnelle</li>
+          <li>Suivi du solde</li>
+          <li>1 objectif partage</li>
+        </ul>
+        <a href="#" class="btn btn-primary" style="width:100%;justify-content:center;">Commencer</a>
+      </div>
+      <div class="price-card featured">
+        <h3>Premium</h3>
+        <p class="price-amount">4,99 EUR<span>/mois</span></p>
+        <ul class="price-features">
+          <li>Depenses illimitees</li>
+          <li>Coach IA hebdomadaire</li>
+          <li>Predictions de depenses</li>
+          <li>Reglement en 1 tap</li>
+          <li>3 objectifs partages</li>
+          <li>Score d'harmonie complet</li>
+        </ul>
+        <a href="#" class="btn btn-primary" style="width:100%;justify-content:center;">Essayer 14 jours gratuit</a>
+      </div>
+      <div class="price-card">
+        <h3>Pro</h3>
+        <p class="price-amount">9,99 EUR<span>/mois</span></p>
+        <ul class="price-features">
+          <li>Tout Premium inclus</li>
+          <li>IA illimitee (questions libres)</li>
+          <li>Export PDF / CSV</li>
+          <li>Multi-devises</li>
+          <li>Rapports fiscaux</li>
+          <li>Support prioritaire</li>
+        </ul>
+        <a href="#" class="btn btn-primary" style="width:100%;justify-content:center;">Essayer 14 jours gratuit</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-banner">
+    <h2>Pret a gerer vos finances en couple ?</h2>
+    <p>Rejoignez des milliers de couples qui ont choisi l'equite financiere.</p>
+    <a href="#" class="btn btn-primary">Telecharger Angla</a>
+  </section>
+
+  <footer>
+    <p>&copy; 2026 Angla. Tous droits reserves. | <a href="#">Mentions legales</a> | <a href="#">Confidentialite</a></p>
+  </footer>
+</body>
+</html>

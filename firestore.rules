@@ -1,0 +1,120 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============================================================
+    // HELPER FUNCTIONS
+    // ============================================================
+
+    // Check if user is authenticated
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    // Get the authenticated user's ID
+    function userId() {
+      return request.auth.uid;
+    }
+
+    // Check if the user belongs to a specific couple
+    function isCouplePartner(coupleId) {
+      return isAuth() &&
+        exists(/databases/$(database)/documents/couples/$(coupleId)/partners/$(userId()));
+    }
+
+    // Validate that required fields exist in the incoming data
+    function hasFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    // ============================================================
+    // USERS COLLECTION
+    // ============================================================
+    match /users/{uid} {
+      // Users can read/write their own profile
+      allow read: if isAuth() && userId() == uid;
+      allow create: if isAuth() && userId() == uid &&
+        hasFields(['email', 'name', 'createdAt']);
+      allow update: if isAuth() && userId() == uid;
+      allow delete: if false; // No self-deletion
+
+      // Partners can read each other's profiles via couple membership
+      allow read: if isAuth() &&
+        resource.data.coupleId != null &&
+        isCouplePartner(resource.data.coupleId);
+    }
+
+    // ============================================================
+    // COUPLES COLLECTION
+    // ============================================================
+    match /couples/{coupleId} {
+      // Only partners can read the couple document
+      allow read: if isCouplePartner(coupleId);
+
+      // Authenticated users can create a couple
+      allow create: if isAuth() &&
+        hasFields(['createdBy', 'inviteCode', 'createdAt']);
+
+      // Only partners can update (e.g., couple settings)
+      allow update: if isCouplePartner(coupleId);
+
+      // No deletion allowed
+      allow delete: if false;
+
+      // Partners subcollection
+      match /partners/{partnerId} {
+        allow read: if isCouplePartner(coupleId);
+        allow create: if isAuth() && userId() == partnerId;
+        allow delete: if false;
+      }
+    }
+
+    // ============================================================
+    // EXPENSES COLLECTION (nested under couples)
+    // ============================================================
+    match /couples/{coupleId}/expenses/{expenseId} {
+      // Only couple partners can CRUD expenses
+      allow read: if isCouplePartner(coupleId);
+      allow create: if isCouplePartner(coupleId) &&
+        hasFields(['description', 'amount', 'category', 'paidBy', 'createdAt']);
+      allow update: if isCouplePartner(coupleId);
+      allow delete: if isCouplePartner(coupleId);
+    }
+
+    // ============================================================
+    // SETTLEMENTS COLLECTION (nested under couples)
+    // ============================================================
+    match /couples/{coupleId}/settlements/{settlementId} {
+      allow read: if isCouplePartner(coupleId);
+      allow create: if isCouplePartner(coupleId) &&
+        hasFields(['fromUser', 'toUser', 'amount', 'createdAt']);
+      allow update: if isCouplePartner(coupleId);
+      allow delete: if false; // Settlements are permanent records
+    }
+
+    // ============================================================
+    // FINANCIAL GOALS (nested under couples)
+    // ============================================================
+    match /couples/{coupleId}/goals/{goalId} {
+      allow read: if isCouplePartner(coupleId);
+      allow create: if isCouplePartner(coupleId) &&
+        hasFields(['name', 'targetAmount', 'createdAt']);
+      allow update: if isCouplePartner(coupleId);
+      allow delete: if isCouplePartner(coupleId);
+    }
+
+    // ============================================================
+    // INVITE CODES (for couple joining)
+    // ============================================================
+    match /inviteCodes/{code} {
+      // Anyone authenticated can read (to look up invite codes)
+      allow read: if isAuth();
+      // Only system creates invite codes (via couple creation)
+      allow create: if isAuth();
+      // Mark as used when partner joins
+      allow update: if isAuth() && !resource.data.used;
+      allow delete: if false;
+    }
+  }
+}

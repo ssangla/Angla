@@ -10,7 +10,10 @@
       "@/services/*": ["src/services/*"],
       "@/models/*": ["src/models/*"],
       "@/utils/*": ["src/utils/*"],
-      "@/assets/*": ["src/assets/*"]
+      "@/assets/*": ["src/assets/*"],
+      "@/contexts/*": ["src/contexts/*"],
+      "@angla/shared": ["../../packages/shared/src"],
+      "@angla/firebase-config": ["../../packages/firebase-config/src"]
     }
   },
   "include": [
