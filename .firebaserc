@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "dfabrik-dev"
+  },
+  "targets": {
+    "dfabrik-dev": {
+      "hosting": {
+        "invoice-scanner": [
+          "dfabrik-dev"
+        ]
+      }
+    }
+  }
+}

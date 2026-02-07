@@ -27,7 +27,9 @@
     },
     "web": {
       "favicon": "./src/assets/favicon.png",
-      "bundler": "metro"
+      "bundler": "metro",
+      "output": "single",
+      "name": "Invoice Scanner - Dfabrik"
     },
     "plugins": [
       "expo-secure-store",

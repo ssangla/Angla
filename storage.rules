@@ -1,0 +1,65 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Invoice images uploaded by authenticated employees
+    match /invoices/{restaurantId}/{invoiceId}/{fileName} {
+      // Authenticated users can read invoices for their restaurant
+      allow read: if request.auth != null
+                  && request.auth.token.restaurantId == restaurantId;
+
+      // Authenticated users can upload invoice images
+      // Max 10MB, only image types allowed
+      allow create: if request.auth != null
+                    && request.auth.token.restaurantId == restaurantId
+                    && request.resource.size < 10 * 1024 * 1024
+                    && request.resource.contentType.matches('image/.*');
+
+      // Only managers/owners can delete invoice images
+      allow delete: if request.auth != null
+                    && request.auth.token.restaurantId == restaurantId
+                    && request.auth.token.role in ['manager', 'owner'];
+
+      // No one can update (overwrite) an existing invoice image - immutability
+      allow update: if false;
+    }
+
+    // Processed/extracted data stored as JSON
+    match /extractions/{restaurantId}/{invoiceId}.json {
+      allow read: if request.auth != null
+                  && request.auth.token.restaurantId == restaurantId;
+
+      allow create: if request.auth != null
+                    && request.auth.token.restaurantId == restaurantId
+                    && request.resource.size < 1 * 1024 * 1024
+                    && request.resource.contentType == 'application/json';
+
+      allow update: if request.auth != null
+                    && request.auth.token.restaurantId == restaurantId
+                    && request.auth.token.role in ['manager', 'owner'];
+
+      allow delete: if request.auth != null
+                    && request.auth.token.role == 'owner';
+    }
+
+    // Export reports (PDF, CSV)
+    match /reports/{restaurantId}/{fileName} {
+      allow read: if request.auth != null
+                  && request.auth.token.restaurantId == restaurantId
+                  && request.auth.token.role in ['manager', 'owner'];
+
+      allow create: if request.auth != null
+                    && request.auth.token.restaurantId == restaurantId
+                    && request.resource.size < 25 * 1024 * 1024;
+
+      allow delete: if request.auth != null
+                    && request.auth.token.role == 'owner';
+    }
+
+    // Deny all other access by default
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

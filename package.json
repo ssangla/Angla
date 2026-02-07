@@ -1,7 +1,7 @@
 {
   "name": "expanse",
   "version": "1.0.0",
-  "description": "Application mobile de gestion des dépenses pour couple",
+  "description": "Invoice scanner app for restaurants - AI-powered receipt processing with Firebase",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
@@ -9,6 +9,11 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "build": "expo build",
+    "build:web": "npx expo export --platform web --output-dir dist",
+    "predeploy": "npm run build:web",
+    "deploy": "firebase deploy --only hosting",
+    "deploy:storage": "firebase deploy --only storage",
+    "deploy:all": "firebase deploy",
     "eject": "expo eject",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -40,7 +45,10 @@
     "react-native-vector-icons": "^10.0.3",
     "date-fns": "^2.30.0",
     "react-native-modal": "^13.0.1",
-    "react-native-picker-select": "^8.1.0"
+    "react-native-picker-select": "^8.1.0",
+    "firebase": "^11.3.0",
+    "react-native-web": "~0.19.10",
+    "react-dom": "18.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
