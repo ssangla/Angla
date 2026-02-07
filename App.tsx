@@ -8,23 +8,27 @@ import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '@/screens/HomeScreen';
 import AddExpenseScreen from '@/screens/AddExpenseScreen';
 import HistoryScreen from '@/screens/HistoryScreen';
+import ScanInvoiceScreen from '@/screens/ScanInvoiceScreen';
+import ValidateInvoiceScreen from '@/screens/ValidateInvoiceScreen';
+import InvoiceListScreen from '@/screens/InvoiceListScreen';
+import InvoiceAnalyticsScreen from '@/screens/InvoiceAnalyticsScreen';
 import { colors } from '@/utils/colors';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
+const stackScreenOptions = {
+  headerStyle: {
+    backgroundColor: colors.primary.main,
+  },
+  headerTintColor: colors.text.inverse,
+  headerTitleStyle: {
+    fontWeight: 'bold' as const,
+  },
+};
+
 const HomeStack = () => (
-  <Stack.Navigator
-    screenOptions={{
-      headerStyle: {
-        backgroundColor: colors.primary.main,
-      },
-      headerTintColor: colors.text.inverse,
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
-    }}
-  >
+  <Stack.Navigator screenOptions={stackScreenOptions}>
     <Stack.Screen
       name="Home"
       component={HomeScreen}
@@ -33,27 +37,37 @@ const HomeStack = () => (
     <Stack.Screen
       name="AddExpense"
       component={AddExpenseScreen}
-      options={{ title: 'Nouvelle Dépense' }}
+      options={{ title: 'Nouvelle Depense' }}
     />
   </Stack.Navigator>
 );
 
 const HistoryStack = () => (
-  <Stack.Navigator
-    screenOptions={{
-      headerStyle: {
-        backgroundColor: colors.primary.main,
-      },
-      headerTintColor: colors.text.inverse,
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
-    }}
-  >
+  <Stack.Navigator screenOptions={stackScreenOptions}>
     <Stack.Screen
       name="History"
       component={HistoryScreen}
       options={{ headerShown: false }}
+    />
+  </Stack.Navigator>
+);
+
+const InvoiceStack = () => (
+  <Stack.Navigator screenOptions={stackScreenOptions}>
+    <Stack.Screen
+      name="InvoiceList"
+      component={InvoiceListScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="ScanInvoice"
+      component={ScanInvoiceScreen}
+      options={{ title: 'Scanner une facture' }}
+    />
+    <Stack.Screen
+      name="ValidateInvoice"
+      component={ValidateInvoiceScreen}
+      options={{ title: 'Validation facture' }}
     />
   </Stack.Navigator>
 );
@@ -69,8 +83,12 @@ export default function App() {
 
             if (route.name === 'HomeTab') {
               iconName = focused ? 'home' : 'home-outline';
-            } else if (route.name === 'AddTab') {
-              iconName = focused ? 'add-circle' : 'add-circle-outline';
+            } else if (route.name === 'ScanTab') {
+              iconName = focused ? 'scan-circle' : 'scan-circle-outline';
+            } else if (route.name === 'InvoicesTab') {
+              iconName = focused ? 'document-text' : 'document-text-outline';
+            } else if (route.name === 'AnalyticsTab') {
+              iconName = focused ? 'bar-chart' : 'bar-chart-outline';
             } else if (route.name === 'HistoryTab') {
               iconName = focused ? 'list' : 'list-outline';
             } else {
@@ -97,9 +115,19 @@ export default function App() {
           options={{ title: 'Accueil' }}
         />
         <Tab.Screen
-          name="AddTab"
-          component={AddExpenseScreen}
-          options={{ title: 'Ajouter' }}
+          name="ScanTab"
+          component={ScanInvoiceScreen}
+          options={{ title: 'Scanner' }}
+        />
+        <Tab.Screen
+          name="InvoicesTab"
+          component={InvoiceStack}
+          options={{ title: 'Factures' }}
+        />
+        <Tab.Screen
+          name="AnalyticsTab"
+          component={InvoiceAnalyticsScreen}
+          options={{ title: 'Analytique' }}
         />
         <Tab.Screen
           name="HistoryTab"
